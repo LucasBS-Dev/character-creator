@@ -3,6 +3,7 @@ package com.rpg.character_creator.controller;
 import com.rpg.character_creator.model.Character;
 import com.rpg.character_creator.service.CharacterService;
 import org.springframework.web.bind.annotation.*;
+import com.rpg.character_creator.dto.CharacterRequestDTO;
 
 import java.util.List;
 
@@ -22,8 +23,8 @@ public class CharacterController {
     }
 
     @PostMapping
-    public Character create(@RequestBody Character character) {
-        return service.save(character);
+    public CharacterRequestDTO create(@RequestBody CharacterRequestDTO dto) {
+        return dto;
     }
 
     @GetMapping
