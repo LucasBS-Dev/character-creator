@@ -23,8 +23,11 @@ public class CharacterController {
     }
 
     @PostMapping
-    public CharacterRequestDTO create(@RequestBody CharacterRequestDTO dto) {
-        return dto;
+    public Character create(@RequestBody CharacterRequestDTO dto) {
+
+        Character character = service.fromDTO(dto);
+
+        return service.save(character);
     }
 
     @GetMapping
