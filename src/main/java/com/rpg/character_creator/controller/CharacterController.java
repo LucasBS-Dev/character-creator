@@ -4,6 +4,7 @@ import com.rpg.character_creator.model.Character;
 import com.rpg.character_creator.service.CharacterService;
 import org.springframework.web.bind.annotation.*;
 import com.rpg.character_creator.dto.CharacterRequestDTO;
+import java.util.UUID;
 
 import java.util.List;
 
@@ -34,4 +35,22 @@ public class CharacterController {
     public List<Character> findAll() {
         return service.findAll();
     }
+
+    @GetMapping("/{id}")
+    public Character findById(@PathVariable UUID id) {
+        return service.findById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable UUID id) {
+        service.deleteById(id);
+    }
+    @PutMapping("/{id}")
+    public Character update(@PathVariable UUID id,
+                            @RequestBody CharacterRequestDTO dto) {
+
+        return service.update(id, dto);
+    }
+
+
 }
