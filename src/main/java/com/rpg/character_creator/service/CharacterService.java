@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 import com.rpg.character_creator.dto.CharacterRequestDTO;
 import java.util.UUID;
 import com.rpg.character_creator.exception.CharacterNotFoundException;
+import com.rpg.character_creator.model.Race;
+import com.rpg.character_creator.model.CharacterClass;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -22,8 +26,8 @@ public class CharacterService {
         return repository.save(character);
     }
 
-    public List<Character> findAll() {
-        return repository.findAll();
+    public Page<Character> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public Character fromDTO(CharacterRequestDTO dto) {
@@ -66,6 +70,18 @@ public class CharacterService {
         character.setCharisma(dto.charisma());
 
         return repository.save(character);
+    }
+
+    public List<Character> findByRace(Race race) {
+        return repository.findByRace(race);
+    }
+
+    public List<Character> findByCharacterClass(CharacterClass characterClass) {
+        return repository.findByCharacterClass(characterClass);
+    }
+
+    public List<Character> searchByName(String name) {
+        return repository.findByNameContainingIgnoreCase(name);
     }
 
 }
