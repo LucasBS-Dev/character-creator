@@ -5,6 +5,7 @@ import com.rpg.character_creator.repository.CharacterRepository;
 import org.springframework.stereotype.Service;
 import com.rpg.character_creator.dto.CharacterRequestDTO;
 import java.util.UUID;
+import com.rpg.character_creator.exception.CharacterNotFoundException;
 
 import java.util.List;
 
@@ -42,7 +43,8 @@ public class CharacterService {
         return character;
     }
     public Character findById(UUID id) {
-        return repository.findById(id).orElseThrow();
+        return repository.findById(id)
+                .orElseThrow(CharacterNotFoundException::new);
     }
 
     public void deleteById(UUID id) {

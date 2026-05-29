@@ -4,8 +4,10 @@ import com.rpg.character_creator.model.Character;
 import com.rpg.character_creator.service.CharacterService;
 import org.springframework.web.bind.annotation.*;
 import com.rpg.character_creator.dto.CharacterRequestDTO;
-import java.util.UUID;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 
+import java.util.UUID;
 import java.util.List;
 
 @RestController
@@ -24,7 +26,8 @@ public class CharacterController {
     }
 
     @PostMapping
-    public Character create(@RequestBody CharacterRequestDTO dto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Character create(@Valid @RequestBody CharacterRequestDTO dto) {
 
         Character character = service.fromDTO(dto);
 
@@ -42,15 +45,15 @@ public class CharacterController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable UUID id) {
         service.deleteById(id);
     }
+
     @PutMapping("/{id}")
     public Character update(@PathVariable UUID id,
-                            @RequestBody CharacterRequestDTO dto) {
+                            @Valid @RequestBody CharacterRequestDTO dto) {
 
         return service.update(id, dto);
     }
-
-
 }
