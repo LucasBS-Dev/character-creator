@@ -10,6 +10,9 @@ import com.rpg.character_creator.model.Race;
 import com.rpg.character_creator.model.CharacterClass;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.rpg.character_creator.model.User;
+import com.rpg.character_creator.repository.UserRepository;
 
 import java.util.List;
 
@@ -18,8 +21,27 @@ public class CharacterService {
 
     private final CharacterRepository repository;
 
-    public CharacterService(CharacterRepository repository) {
+    private final UserRepository userRepository;
+
+    private User getAuthenticatedUser() {
+
+        String username =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        return userRepository
+                .findByUsername(username)
+                .orElseThrow();
+    }
+
+    public CharacterService(
+            CharacterRepository repository,
+            UserRepository userRepository
+    ) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     public Character save(Character character) {
@@ -43,6 +65,8 @@ public class CharacterService {
         character.setIntelligence(dto.intelligence());
         character.setWisdom(dto.wisdom());
         character.setCharisma(dto.charisma());
+
+        character.setUser(getAuthenticatedUser());
 
         return character;
     }

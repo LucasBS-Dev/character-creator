@@ -1,23 +1,32 @@
 package com.rpg.character_creator.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.rpg.character_creator.model.User;
 import com.rpg.character_creator.service.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
+    private final UserService service;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserService service) {
+        this.service = service;
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "UserController funcionando";
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public User create(
+            @RequestBody User user
+    ) {
+        return service.create(user);
+    }
+
+    @GetMapping("/public")
+    public String publicRoute() {
+        return "funcionando";
     }
 
 }
