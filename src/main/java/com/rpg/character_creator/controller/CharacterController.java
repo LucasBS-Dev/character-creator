@@ -12,11 +12,9 @@ import com.rpg.character_creator.model.Race;
 import com.rpg.character_creator.model.CharacterClass;
 import java.util.UUID;
 import java.util.List;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/characters")
-@SecurityRequirement(name = "basicAuth")
 public class CharacterController {
 
     @GetMapping("/test")
@@ -76,4 +74,6 @@ public class CharacterController {
 
         return service.update(id, dto);
     }
+
+
 }

@@ -1,20 +1,24 @@
 package com.rpg.character_creator.service;
 
 import com.rpg.character_creator.model.Character;
-import com.rpg.character_creator.repository.CharacterRepository;
-import org.springframework.stereotype.Service;
-import com.rpg.character_creator.dto.CharacterRequestDTO;
-import java.util.UUID;
-import com.rpg.character_creator.exception.CharacterNotFoundException;
-import com.rpg.character_creator.model.Race;
 import com.rpg.character_creator.model.CharacterClass;
+import com.rpg.character_creator.model.Race;
+import com.rpg.character_creator.model.User;
+
+import com.rpg.character_creator.dto.CharacterRequestDTO;
+import com.rpg.character_creator.exception.CharacterNotFoundException;
+
+import com.rpg.character_creator.repository.CharacterRepository;
+import com.rpg.character_creator.repository.UserRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
-import com.rpg.character_creator.model.User;
-import com.rpg.character_creator.repository.UserRepository;
+import org.springframework.stereotype.Service;
+import com.rpg.character_creator.exception.AccessDeniedException;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CharacterService {
@@ -49,7 +53,10 @@ public class CharacterService {
     }
 
     public Page<Character> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+
+        User user = getAuthenticatedUser();
+
+        return repository.findByUser(user, pageable);
     }
 
     public Character fromDTO(CharacterRequestDTO dto) {
@@ -71,8 +78,18 @@ public class CharacterService {
         return character;
     }
     public Character findById(UUID id) {
-        return repository.findById(id)
-                .orElseThrow(CharacterNotFoundException::new);
+
+        Character character =
+                repository.findById(id)
+                        .orElseThrow(CharacterNotFoundException::new);
+
+        if (!character.getUser().getId()
+                .equals(getAuthenticatedUser().getId())) {
+
+            throw new AccessDeniedException();
+        }
+
+        return character;
     }
 
     public void deleteById(UUID id) {

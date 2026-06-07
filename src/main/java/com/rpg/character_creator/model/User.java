@@ -1,5 +1,6 @@
 package com.rpg.character_creator.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.UUID;
 import java.util.List;
@@ -18,6 +19,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Character> characters;
 
