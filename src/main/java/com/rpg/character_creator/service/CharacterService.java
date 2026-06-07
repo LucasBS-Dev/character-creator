@@ -93,7 +93,11 @@ public class CharacterService {
     }
 
     public void deleteById(UUID id) {
-        repository.deleteById(id);
+
+        Character character = findById(id);
+
+        repository.delete(character);
+
     }
 
     public Character update(UUID id, CharacterRequestDTO dto) {
