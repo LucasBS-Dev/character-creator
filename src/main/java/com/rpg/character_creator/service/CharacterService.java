@@ -118,15 +118,32 @@ public class CharacterService {
     }
 
     public List<Character> findByRace(Race race) {
-        return repository.findByRace(race);
+
+        return repository.findByUserAndRace(
+                getAuthenticatedUser(),
+                race
+        );
+
     }
 
-    public List<Character> findByCharacterClass(CharacterClass characterClass) {
-        return repository.findByCharacterClass(characterClass);
+    public List<Character> findByCharacterClass(
+            CharacterClass characterClass
+    ) {
+
+        return repository.findByUserAndCharacterClass(
+                getAuthenticatedUser(),
+                characterClass
+        );
+
     }
 
     public List<Character> searchByName(String name) {
-        return repository.findByNameContainingIgnoreCase(name);
+
+        return repository.findByUserAndNameContainingIgnoreCase(
+                getAuthenticatedUser(),
+                name
+        );
+
     }
 
 }

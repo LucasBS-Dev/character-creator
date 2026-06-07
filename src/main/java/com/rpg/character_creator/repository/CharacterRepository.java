@@ -23,4 +23,19 @@ public interface CharacterRepository extends JpaRepository<Character, UUID> {
 
     Page<Character> findByUser(User user, Pageable pageable);
 
+    List<Character> findByUserAndRace(
+            User user,
+            Race race
+    );
+
+    List<Character> findByUserAndCharacterClass(
+            User user,
+            CharacterClass characterClass
+    );
+
+    List<Character> findByUserAndNameContainingIgnoreCase(
+            User user,
+            String name
+    );
+
 }
