@@ -12,6 +12,7 @@ import com.rpg.character_creator.model.Race;
 import com.rpg.character_creator.model.CharacterClass;
 import java.util.UUID;
 import java.util.List;
+import com.rpg.character_creator.dto.CharacterResponseDTO;
 
 @RestController
 @RequestMapping("/characters")
@@ -30,16 +31,26 @@ public class CharacterController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Character create(@Valid @RequestBody CharacterRequestDTO dto) {
+    public CharacterResponseDTO create(
+            @Valid @RequestBody CharacterRequestDTO dto
+    ) {
 
         Character character = service.fromDTO(dto);
 
-        return service.save(character);
+        return new CharacterResponseDTO(
+                service.save(character)
+        );
     }
 
     @GetMapping
-    public Page<Character> findAll(Pageable pageable) {
-        return service.findAll(pageable);
+    public Page<CharacterResponseDTO> findAll(
+            Pageable pageable
+    ) {
+
+        return service
+                .findAll(pageable)
+                .map(CharacterResponseDTO::new);
+
     }
 
     @GetMapping("/race/{race}")
@@ -58,8 +69,14 @@ public class CharacterController {
     }
 
     @GetMapping("/{id}")
-    public Character findById(@PathVariable UUID id) {
-        return service.findById(id);
+    public CharacterResponseDTO findById(
+            @PathVariable UUID id
+    ) {
+
+        return new CharacterResponseDTO(
+                service.findById(id)
+        );
+
     }
 
     @DeleteMapping("/{id}")
@@ -69,11 +86,14 @@ public class CharacterController {
     }
 
     @PutMapping("/{id}")
-    public Character update(@PathVariable UUID id,
-                            @Valid @RequestBody CharacterRequestDTO dto) {
+    public CharacterResponseDTO update(
+            @PathVariable UUID id,
+            @Valid @RequestBody CharacterRequestDTO dto
+    ) {
 
-        return service.update(id, dto);
+        return new CharacterResponseDTO(
+                service.update(id, dto)
+        );
     }
-
 
 }
