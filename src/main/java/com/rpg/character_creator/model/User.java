@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.UUID;
 import java.util.List;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -22,6 +24,9 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Character> characters;
+
+    @OneToMany(mappedBy = "master")
+    private List<Campaign> campaigns;
 
     public UUID getId() {
         return id;
@@ -54,4 +59,15 @@ public class User {
     public void setCharacters(List<Character> characters) {
         this.characters = characters;
     }
+
+    public List<Campaign> getCampaigns() {
+        return campaigns;
+    }
+
+    public void setCampaigns(
+            List<Campaign> campaigns
+    ) {
+        this.campaigns = campaigns;
+    }
+
 }
