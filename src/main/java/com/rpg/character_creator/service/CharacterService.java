@@ -139,8 +139,10 @@ public class CharacterService {
 
     public List<Character> searchByName(String name) {
 
+        User user = getAuthenticatedUser();
+
         return repository.findByUserAndNameContainingIgnoreCase(
-                getAuthenticatedUser(),
+                user,
                 name
         );
 
