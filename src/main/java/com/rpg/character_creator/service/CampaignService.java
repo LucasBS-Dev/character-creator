@@ -12,6 +12,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
+import java.util.UUID;
+
+import com.rpg.character_creator.model.Character;
+import com.rpg.character_creator.repository.CharacterRepository;
+
 @Service
 public class CampaignService {
 
@@ -19,12 +24,16 @@ public class CampaignService {
 
     private final UserRepository userRepository;
 
+    private final CharacterRepository characterRepository;
+
     public CampaignService(
             CampaignRepository repository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            CharacterRepository characterRepository
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
+        this.characterRepository = characterRepository;
     }
 
     private User getAuthenticatedUser() {
@@ -68,11 +77,52 @@ public class CampaignService {
     public CampaignResponseDTO toDTO(Campaign campaign) {
 
         return new CampaignResponseDTO(
+
                 campaign.getId(),
+
                 campaign.getName(),
-                campaign.getMaster().getUsername()
+
+                campaign.getMaster().getUsername(),
+
+                campaign
+                        .getCharacters()
+                        .stream()
+                        .map(Character::getName)
+                        .toList()
+
         );
 
     }
 
+    public CampaignResponseDTO addCharacter(
+            UUID campaignId,
+            UUID characterId
+    ) {
+
+        Campaign campaign =
+                repository.findById(campaignId)
+                        .orElseThrow();
+
+        Character character =
+                characterRepository.findById(characterId)
+                        .orElseThrow();
+
+        if (!campaign.getMaster().getId()
+                .equals(getAuthenticatedUser().getId())) {
+
+            throw new RuntimeException(
+                    "Somente o mestre pode editar a campanha"
+            );
+        }
+
+        campaign
+                .getCharacters()
+                .add(character);
+
+        Campaign saved =
+                repository.save(campaign);
+
+        return toDTO(saved);
+
+    }
 }

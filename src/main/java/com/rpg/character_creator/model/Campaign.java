@@ -1,7 +1,9 @@
 package com.rpg.character_creator.model;
 
 import jakarta.persistence.*;
-
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -18,6 +20,9 @@ public class Campaign {
     private User master;
 
     public Campaign() {}
+
+    @OneToMany
+    private List<Character> characters = new ArrayList<>();
 
     public UUID getId() {
         return id;
@@ -41,5 +46,13 @@ public class Campaign {
 
     public void setMaster(User master) {
         this.master = master;
+    }
+
+    public List<Character> getCharacters() {
+        return characters;
+    }
+
+    public void setCharacters(List<Character> characters) {
+        this.characters = characters;
     }
 }
