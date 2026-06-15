@@ -10,6 +10,7 @@ import com.rpg.character_creator.exception.CharacterNotFoundException;
 
 import com.rpg.character_creator.repository.CharacterRepository;
 import com.rpg.character_creator.repository.UserRepository;
+import com.rpg.character_creator.repository.CampaignRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,8 @@ public class CharacterService {
 
     private final UserRepository userRepository;
 
+    private final CampaignRepository campaignRepository;
+
     private User getAuthenticatedUser() {
 
         String username =
@@ -42,10 +45,12 @@ public class CharacterService {
 
     public CharacterService(
             CharacterRepository repository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            CampaignRepository campaignRepository
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
+        this.campaignRepository = campaignRepository;
     }
 
     public Character save(Character character) {
@@ -92,6 +97,30 @@ public class CharacterService {
         return character;
     }
 
+    private boolean canEdit(Character character) {
+
+        User currentUser =
+                getAuthenticatedUser();
+
+        boolean isOwner =
+                character
+                        .getUser()
+                        .getId()
+                        .equals(
+                                currentUser.getId()
+                        );
+
+        boolean isMaster =
+                campaignRepository
+                        .existsByMasterAndCharactersContains(
+                                currentUser,
+                                character
+                        );
+
+        return isOwner || isMaster;
+
+    }
+
     public void deleteById(UUID id) {
 
         Character character = findById(id);
@@ -100,9 +129,26 @@ public class CharacterService {
 
     }
 
-    public Character update(UUID id, CharacterRequestDTO dto) {
+    public Character update(
+            UUID id,
+            CharacterRequestDTO dto
+    ) {
 
-        Character character = findById(id);
+        Character character =
+
+                repository
+                        .findById(id)
+                        .orElseThrow(
+                                CharacterNotFoundException::new
+                        );
+
+        if (
+                !canEdit(character)
+        ) {
+
+            throw new AccessDeniedException();
+
+        }
 
         character.setName(dto.name());
         character.setRace(dto.race());
@@ -115,6 +161,7 @@ public class CharacterService {
         character.setCharisma(dto.charisma());
 
         return repository.save(character);
+
     }
 
     public List<Character> findByRace(Race race) {

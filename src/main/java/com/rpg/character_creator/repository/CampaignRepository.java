@@ -2,7 +2,7 @@ package com.rpg.character_creator.repository;
 
 import com.rpg.character_creator.model.Campaign;
 import com.rpg.character_creator.model.User;
-
+import com.rpg.character_creator.model.Character;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,4 +15,8 @@ public interface CampaignRepository
 
     List<Campaign> findByPlayersContains(User user);
 
+    boolean existsByMasterAndCharactersContains(
+            User master,
+            Character character
+    );
 }
