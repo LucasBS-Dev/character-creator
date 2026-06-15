@@ -24,6 +24,21 @@ public class Campaign {
     @OneToMany
     private List<Character> characters = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+
+            name = "campaign_players",
+
+            joinColumns =
+            @JoinColumn(name = "campaign_id"),
+
+            inverseJoinColumns =
+            @JoinColumn(name = "user_id")
+
+    )
+    private List<User> players =
+            new ArrayList<>();
+
     public UUID getId() {
         return id;
     }
@@ -46,6 +61,16 @@ public class Campaign {
 
     public void setMaster(User master) {
         this.master = master;
+    }
+
+    public List<User> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(
+            List<User> players
+    ) {
+        this.players = players;
     }
 
     public List<Character> getCharacters() {

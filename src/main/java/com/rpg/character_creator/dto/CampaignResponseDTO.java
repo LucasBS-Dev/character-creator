@@ -11,6 +11,8 @@ public record CampaignResponseDTO(
 
         String master,
 
+        List<String> players,
+
         List<String> characters
 
 ) {}

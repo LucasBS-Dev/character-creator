@@ -85,6 +85,12 @@ public class CampaignService {
                 campaign.getMaster().getUsername(),
 
                 campaign
+                        .getPlayers()
+                        .stream()
+                        .map(User::getUsername)
+                        .toList(),
+
+                campaign
                         .getCharacters()
                         .stream()
                         .map(Character::getName)
@@ -118,6 +124,21 @@ public class CampaignService {
         campaign
                 .getCharacters()
                 .add(character);
+
+        User owner =
+                character.getUser();
+
+        if (
+                !campaign
+                        .getPlayers()
+                        .contains(owner)
+        ) {
+
+            campaign
+                    .getPlayers()
+                    .add(owner);
+
+        }
 
         Campaign saved =
                 repository.save(campaign);
