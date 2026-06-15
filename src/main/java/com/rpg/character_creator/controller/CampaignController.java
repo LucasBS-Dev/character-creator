@@ -39,6 +39,14 @@ public class CampaignController {
                 .toList();
 
     }
+
+    @GetMapping("/my")
+    public List<CampaignResponseDTO> findMyCampaigns() {
+
+        return service.findMyCampaigns();
+
+    }
+
     @PostMapping("/{campaignId}/characters/{characterId}")
     public CampaignResponseDTO addCharacter(
 

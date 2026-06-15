@@ -146,4 +146,17 @@ public class CampaignService {
         return toDTO(saved);
 
     }
+
+    public List<CampaignResponseDTO> findMyCampaigns() {
+
+        return repository
+                .findByPlayersContains(
+                        getAuthenticatedUser()
+                )
+                .stream()
+                .map(this::toDTO)
+                .toList();
+
+    }
+
 }

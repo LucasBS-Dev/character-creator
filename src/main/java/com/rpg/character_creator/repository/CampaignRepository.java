@@ -13,4 +13,6 @@ public interface CampaignRepository
 
     List<Campaign> findByMaster(User master);
 
+    List<Campaign> findByPlayersContains(User user);
+
 }
