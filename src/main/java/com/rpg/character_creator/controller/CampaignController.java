@@ -47,6 +47,26 @@ public class CampaignController {
 
     }
 
+    @DeleteMapping(
+            "/{campaignId}/characters/{characterId}"
+    )
+    public CampaignResponseDTO removeCharacter(
+
+            @PathVariable
+            UUID campaignId,
+
+            @PathVariable
+            UUID characterId
+
+    ) {
+
+        return service.removeCharacter(
+                campaignId,
+                characterId
+        );
+
+    }
+
     @PostMapping("/{campaignId}/characters/{characterId}")
     public CampaignResponseDTO addCharacter(
 

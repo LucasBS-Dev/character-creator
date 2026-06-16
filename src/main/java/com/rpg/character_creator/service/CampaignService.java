@@ -158,5 +158,52 @@ public class CampaignService {
                 .toList();
 
     }
+    public CampaignResponseDTO removeCharacter(
+            UUID campaignId,
+            UUID characterId
+    ) {
 
+        Campaign campaign =
+                repository
+                        .findById(campaignId)
+                        .orElseThrow();
+
+        if (
+                !campaign
+                        .getMaster()
+                        .getId()
+                        .equals(
+                                getAuthenticatedUser()
+                                        .getId()
+                        )
+        ) {
+
+            throw new RuntimeException(
+                    "Somente o mestre pode editar a campanha"
+            );
+
+        }
+
+        campaign
+                .getCharacters()
+                .removeIf(
+
+                        character ->
+
+                                character
+                                        .getId()
+                                        .equals(
+                                                characterId
+                                        )
+
+                );
+
+        Campaign saved =
+                repository.save(
+                        campaign
+                );
+
+        return toDTO(saved);
+
+    }
 }

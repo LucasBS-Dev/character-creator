@@ -86,17 +86,21 @@ public class CharacterService {
 
         Character character =
                 repository.findById(id)
-                        .orElseThrow(CharacterNotFoundException::new);
+                        .orElseThrow(
+                                CharacterNotFoundException::new
+                        );
 
-        if (!character.getUser().getId()
-                .equals(getAuthenticatedUser().getId())) {
+        if (
+                !canEdit(character)
+        ) {
 
             throw new AccessDeniedException();
+
         }
 
         return character;
-    }
 
+    }
     private boolean canEdit(Character character) {
 
         User currentUser =
@@ -194,5 +198,7 @@ public class CharacterService {
         );
 
     }
+
+
 
 }
