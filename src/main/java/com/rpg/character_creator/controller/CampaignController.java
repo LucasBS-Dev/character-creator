@@ -5,7 +5,7 @@ import com.rpg.character_creator.model.Campaign;
 import com.rpg.character_creator.service.CampaignService;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.*;
-
+import com.rpg.character_creator.dto.CampaignDetailsResponseDTO;
 import java.util.List;
 
 @RestController
@@ -82,4 +82,26 @@ public class CampaignController {
         );
 
     }
+
+    @GetMapping("/{id}")
+    public CampaignDetailsResponseDTO findDetailsById(
+
+            @PathVariable
+            UUID id
+
+    ) {
+
+        return service.findDetailsById(id);
+
+    }
+
+    @DeleteMapping("/{campaignId}/leave")
+    public CampaignResponseDTO leaveCampaign(
+            @PathVariable UUID campaignId
+    ) {
+
+        return service.leaveCampaign(campaignId);
+
+    }
+
 }

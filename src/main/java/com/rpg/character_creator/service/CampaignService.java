@@ -13,7 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.List;
 
 import java.util.UUID;
-
+import com.rpg.character_creator.dto.CampaignDetailsResponseDTO;
+import com.rpg.character_creator.dto.PlayerResponseDTO;
+import com.rpg.character_creator.dto.CharacterResponseDTO;
 import com.rpg.character_creator.model.Character;
 import com.rpg.character_creator.repository.CharacterRepository;
 
@@ -70,6 +72,38 @@ public class CampaignService {
 
         return repository.findByMaster(
                 getAuthenticatedUser()
+        );
+
+    }
+
+    public CampaignDetailsResponseDTO findDetailsById(
+            UUID id
+    ) {
+
+        Campaign campaign =
+
+                repository
+                        .findById(id)
+                        .orElseThrow();
+
+        if (
+                !campaign
+                        .getMaster()
+                        .getId()
+                        .equals(
+                                getAuthenticatedUser()
+                                        .getId()
+                        )
+        ) {
+
+            throw new RuntimeException(
+                    "Somente o mestre pode visualizar esta campanha"
+            );
+
+        }
+
+        return toDetailsDTO(
+                campaign
         );
 
     }
@@ -206,4 +240,106 @@ public class CampaignService {
         return toDTO(saved);
 
     }
+
+    public CampaignResponseDTO leaveCampaign(
+            UUID campaignId
+    ) {
+
+        Campaign campaign =
+
+                repository
+                        .findById(campaignId)
+                        .orElseThrow();
+
+        User currentUser =
+                getAuthenticatedUser();
+
+        campaign
+                .getPlayers()
+                .removeIf(
+
+                        player ->
+
+                                player
+                                        .getId()
+                                        .equals(
+                                                currentUser.getId()
+                                        )
+
+                );
+
+        campaign
+                .getCharacters()
+                .removeIf(
+
+                        character ->
+
+                                character
+                                        .getUser()
+                                        .getId()
+                                        .equals(
+                                                currentUser.getId()
+                                        )
+
+                );
+
+        Campaign saved =
+                repository.save(
+                        campaign
+                );
+
+        return toDTO(saved);
+
+    }
+
+    public CampaignDetailsResponseDTO toDetailsDTO(
+            Campaign campaign
+    ) {
+
+        List<PlayerResponseDTO> players =
+
+                campaign
+                        .getPlayers()
+                        .stream()
+                        .map(player ->
+
+                                new PlayerResponseDTO(
+
+                                        player.getUsername(),
+
+                                        campaign
+                                                .getCharacters()
+                                                .stream()
+                                                .filter(character ->
+
+                                                        character
+                                                                .getUser()
+                                                                .getId()
+                                                                .equals(
+                                                                        player.getId()
+                                                                )
+
+                                                )
+                                                .map(CharacterResponseDTO::new)
+                                                .toList()
+
+                                )
+
+                        )
+                        .toList();
+
+        return new CampaignDetailsResponseDTO(
+
+                campaign.getId(),
+
+                campaign.getName(),
+
+                campaign.getMaster().getUsername(),
+
+                players
+
+        );
+
+    }
+
 }
