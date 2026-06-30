@@ -3,8 +3,9 @@ package com.rpg.character_creator.service;
 import com.rpg.character_creator.dto.CampaignResponseDTO;
 import com.rpg.character_creator.model.Campaign;
 import com.rpg.character_creator.model.User;
-
+import org.springframework.transaction.annotation.Transactional;
 import com.rpg.character_creator.repository.CampaignRepository;
+import com.rpg.character_creator.repository.InvitationRepository;
 import com.rpg.character_creator.repository.UserRepository;
 
 import org.springframework.stereotype.Service;
@@ -28,14 +29,18 @@ public class CampaignService {
 
     private final CharacterRepository characterRepository;
 
+    private final InvitationRepository invitationRepository;
+
     public CampaignService(
             CampaignRepository repository,
             UserRepository userRepository,
-            CharacterRepository characterRepository
+            CharacterRepository characterRepository,
+            InvitationRepository invitationRepository
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.characterRepository = characterRepository;
+        this.invitationRepository = invitationRepository;
     }
 
     private User getAuthenticatedUser() {
@@ -339,6 +344,31 @@ public class CampaignService {
                 players
 
         );
+
+    }
+    @Transactional
+    public void delete(
+            UUID id
+    ) {
+
+        Campaign campaign =
+
+                repository
+                        .findById(id)
+                        .orElseThrow();
+
+        if (!campaign.getMaster().getId()
+                .equals(getAuthenticatedUser().getId())) {
+
+            throw new RuntimeException(
+                    "Somente o mestre pode excluir a campanha."
+            );
+
+        }
+
+        invitationRepository.deleteByCampaign(campaign);
+
+        repository.delete(campaign);
 
     }
 

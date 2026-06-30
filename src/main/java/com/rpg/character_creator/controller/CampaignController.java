@@ -47,6 +47,18 @@ public class CampaignController {
 
     }
 
+    @DeleteMapping("/{id}")
+    public void delete(
+
+            @PathVariable
+            UUID id
+
+    ) {
+
+        service.delete(id);
+
+    }
+
     @DeleteMapping(
             "/{campaignId}/characters/{characterId}"
     )
