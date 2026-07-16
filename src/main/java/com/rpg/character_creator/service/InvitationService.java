@@ -1,6 +1,7 @@
 package com.rpg.character_creator.service;
 
 import com.rpg.character_creator.dto.InvitationResponseDTO;
+import com.rpg.character_creator.exception.*;
 import com.rpg.character_creator.model.Invitation;
 import com.rpg.character_creator.model.User;
 import com.rpg.character_creator.repository.InvitationRepository;
@@ -52,7 +53,9 @@ public class InvitationService {
 
         return userRepository
                 .findByUsername(username)
-                .orElseThrow();
+                .orElseThrow(
+                        UserNotFoundException::new
+                );
 
     }
 
@@ -86,7 +89,9 @@ public class InvitationService {
 
                 campaignRepository
                         .findById(campaignId)
-                        .orElseThrow();
+                        .orElseThrow(
+                                CampaignNotFoundException::new
+                        );
 
         if (!campaign.getMaster().getId()
                 .equals(getAuthenticatedUser().getId())) {
@@ -101,7 +106,22 @@ public class InvitationService {
 
                 userRepository
                         .findByUsername(username)
-                        .orElseThrow();
+                        .orElseThrow(
+                                UserNotFoundException::new
+                        );
+
+        if (
+                repository.existsByCampaignAndPlayer(
+                        campaign,
+                        player
+                )
+        ) {
+
+            throw new ConflictException(
+                    "Este jogador já possui um convite para esta campanha."
+            );
+
+        }
 
         Invitation invitation = new Invitation();
 
@@ -137,7 +157,9 @@ public class InvitationService {
 
                 repository
                         .findById(invitationId)
-                        .orElseThrow();
+                        .orElseThrow(
+                                InvitationNotFoundException::new
+                        );
 
         User player =
                 getAuthenticatedUser();
@@ -155,7 +177,9 @@ public class InvitationService {
 
                 characterRepository
                         .findById(characterId)
-                        .orElseThrow();
+                        .orElseThrow(
+                                CharacterNotFoundException::new
+                        );
 
         if (!character.getUser().getId()
                 .equals(player.getId())) {

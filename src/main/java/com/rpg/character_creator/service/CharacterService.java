@@ -4,7 +4,7 @@ import com.rpg.character_creator.model.Character;
 import com.rpg.character_creator.model.CharacterClass;
 import com.rpg.character_creator.model.Race;
 import com.rpg.character_creator.model.User;
-
+import com.rpg.character_creator.exception.UserNotFoundException;
 import com.rpg.character_creator.dto.CharacterRequestDTO;
 import com.rpg.character_creator.exception.CharacterNotFoundException;
 
@@ -40,7 +40,9 @@ public class CharacterService {
 
         return userRepository
                 .findByUsername(username)
-                .orElseThrow();
+                .orElseThrow(
+                        UserNotFoundException::new
+                );
     }
 
     public CharacterService(
@@ -91,7 +93,7 @@ public class CharacterService {
                         );
 
         if (
-                !canEdit(character)
+                !canViewOrEdit(character)
         ) {
 
             throw new AccessDeniedException();
@@ -101,7 +103,7 @@ public class CharacterService {
         return character;
 
     }
-    private boolean canEdit(Character character) {
+    private boolean canViewOrEdit(Character character) {
 
         User currentUser =
                 getAuthenticatedUser();
@@ -127,7 +129,28 @@ public class CharacterService {
 
     public void deleteById(UUID id) {
 
-        Character character = findById(id);
+        Character character =
+                repository
+                        .findById(id)
+                        .orElseThrow(
+                                CharacterNotFoundException::new
+                        );
+
+        User currentUser =
+                getAuthenticatedUser();
+
+        if (
+                !character
+                        .getUser()
+                        .getId()
+                        .equals(
+                                currentUser.getId()
+                        )
+        ) {
+
+            throw new AccessDeniedException();
+
+        }
 
         repository.delete(character);
 
@@ -147,7 +170,7 @@ public class CharacterService {
                         );
 
         if (
-                !canEdit(character)
+                !canViewOrEdit(character)
         ) {
 
             throw new AccessDeniedException();

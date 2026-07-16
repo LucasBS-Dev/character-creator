@@ -1,13 +1,16 @@
 package com.rpg.character_creator.service;
 
 import com.rpg.character_creator.dto.CampaignResponseDTO;
+import com.rpg.character_creator.exception.CampaignNotFoundException;
+import com.rpg.character_creator.exception.CharacterNotFoundException;
+import com.rpg.character_creator.exception.UserNotFoundException;
 import com.rpg.character_creator.model.Campaign;
 import com.rpg.character_creator.model.User;
 import org.springframework.transaction.annotation.Transactional;
 import com.rpg.character_creator.repository.CampaignRepository;
 import com.rpg.character_creator.repository.InvitationRepository;
 import com.rpg.character_creator.repository.UserRepository;
-
+import com.rpg.character_creator.exception.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -53,7 +56,9 @@ public class CampaignService {
 
         return userRepository
                 .findByUsername(username)
-                .orElseThrow();
+                .orElseThrow(
+                        UserNotFoundException::new
+                );
     }
 
     public CampaignResponseDTO create(String name) {
@@ -89,7 +94,9 @@ public class CampaignService {
 
                 repository
                         .findById(id)
-                        .orElseThrow();
+                        .orElseThrow(
+                                CampaignNotFoundException::new
+                        );
 
         if (
                 !campaign
@@ -146,11 +153,15 @@ public class CampaignService {
 
         Campaign campaign =
                 repository.findById(campaignId)
-                        .orElseThrow();
+                        .orElseThrow(
+                                CampaignNotFoundException::new
+                        );
 
         Character character =
                 characterRepository.findById(characterId)
-                        .orElseThrow();
+                        .orElseThrow(
+                                CharacterNotFoundException::new
+                        );
 
         if (!campaign.getMaster().getId()
                 .equals(getAuthenticatedUser().getId())) {
@@ -203,9 +214,12 @@ public class CampaignService {
     ) {
 
         Campaign campaign =
+
                 repository
                         .findById(campaignId)
-                        .orElseThrow();
+                        .orElseThrow(
+                                CampaignNotFoundException::new
+                        );
 
         if (
                 !campaign
@@ -254,10 +268,35 @@ public class CampaignService {
 
                 repository
                         .findById(campaignId)
-                        .orElseThrow();
+                        .orElseThrow(
+                                CampaignNotFoundException::new
+                        );
 
         User currentUser =
                 getAuthenticatedUser();
+
+        if (
+                campaign
+                        .getMaster()
+                        .getId()
+                        .equals(
+                                currentUser.getId()
+                        )
+        ) {
+
+            throw new AccessDeniedException();
+
+        }
+
+        if (
+                !campaign
+                        .getPlayers()
+                        .contains(currentUser)
+        ) {
+
+            throw new AccessDeniedException();
+
+        }
 
         campaign
                 .getPlayers()
@@ -355,7 +394,9 @@ public class CampaignService {
 
                 repository
                         .findById(id)
-                        .orElseThrow();
+                        .orElseThrow(
+                                CampaignNotFoundException::new
+                        );
 
         if (!campaign.getMaster().getId()
                 .equals(getAuthenticatedUser().getId())) {

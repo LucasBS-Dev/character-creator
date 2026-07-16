@@ -12,5 +12,11 @@ public interface InvitationRepository
         extends JpaRepository<Invitation, UUID> {
 
     List<Invitation> findByPlayer(User player);
+
     void deleteByCampaign(Campaign campaign);
+
+    boolean existsByCampaignAndPlayer(
+            Campaign campaign,
+            User player
+    );
 }

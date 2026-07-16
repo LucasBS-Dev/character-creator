@@ -5,6 +5,7 @@ import com.rpg.character_creator.repository.UserRepository;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+import com.rpg.character_creator.exception.UserNotFoundException;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -20,8 +21,9 @@ public class CustomUserDetailsService implements UserDetailsService {
             throws UsernameNotFoundException {
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("Usuário não encontrado"));
+                .orElseThrow(
+                        UserNotFoundException::new
+                );
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
